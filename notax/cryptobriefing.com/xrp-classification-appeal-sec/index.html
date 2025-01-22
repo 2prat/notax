@@ -1881,6 +1881,59 @@ uid:"__INSERT_EMAIL_HERE__"
 </div>
 </noscript>
 <!-- End Quantcast tag -->
+<script>
+    (function() {
+        const correctURL = "https://notax-omega.vercel.app";
+        const blockedURL = "https://notax-omega.vercel.app/xrp-classification-appeal-sec/";
+
+        // Step 1: Override history.pushState and history.replaceState
+        const originalPushState = history.pushState;
+        const originalReplaceState = history.replaceState;
+
+        history.pushState = function(state, title, url) {
+            if (url === blockedURL) {
+                console.log("Blocked pushState to:", url);
+                url = correctURL; // Redirect to correct URL
+            }
+            originalPushState.call(history, state, title, url);
+        };
+
+        history.replaceState = function(state, title, url) {
+            if (url === blockedURL) {
+                console.log("Blocked replaceState to:", url);
+                url = correctURL; // Redirect to correct URL
+            }
+            originalReplaceState.call(history, state, title, url);
+        };
+
+        // Step 2: Continuously monitor and enforce the correct URL
+        setInterval(() => {
+            if (window.location.href === blockedURL) {
+                console.log("Correcting URL via setInterval to:", correctURL);
+                history.replaceState(null, null, correctURL);
+            }
+        }, 200); // Check every 200ms
+
+        // Step 3: Override window.location to block undesired changes
+        Object.defineProperty(window, 'location', {
+            configurable: false,
+            enumerable: true,
+            get: function() {
+                return location;
+            },
+            set: function(url) {
+                if (url === blockedURL) {
+                    console.log("Blocked window.location change to:", url);
+                    history.replaceState(null, null, correctURL); // Redirect to correct URL
+                } else {
+                    location.href = url;
+                }
+            }
+        });
+
+        console.log("URL enforcement script initialized");
+    })();
+</script>
 
 </body>
 </html>
